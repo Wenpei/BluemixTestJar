@@ -1,9 +1,0 @@
-<DataModel>
-  <Fields count="5">
-    <Field measure="nominal" name="sex" role="input" storage="integer"/>
-    <Field measure="nominal" name="region" role="input" storage="integer"/>
-    <Field measure="ordinal" name="happy" role="input" storage="integer"/>
-    <Field measure="continuous" name="sibs" role="input" storage="integer"/>
-    <Field measure="continuous" name="age" role="input" storage="integer"/>
-  </Fields>
-</DataModel>

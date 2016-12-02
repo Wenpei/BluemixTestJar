@@ -18,6 +18,11 @@ setGeneric("spss.predict", function(object, ...) { standardGeneric("spss.predict
 setGeneric("spss.summary", function(object) { standardGeneric("spss.summary") })
 
 #' @param object a fitted ML model object.
+#' @rdname spss.summary.xml
+#' @export
+setGeneric("spss.summary.xml", function(object) { standardGeneric("spss.summary.xml") })
+
+#' @param object a fitted ML model object.
 #' @param path a folder path for mode export.
 #' @rdname spss.save
 #' @export

@@ -1,0 +1,218 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><title>R: Two-Step Cluster</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.3/styles/github.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.3/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.3/languages/r.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+</head><body>
+
+<table width="100%" summary="page for clustering.twostep {SPSSonSparkR}"><tr><td>clustering.twostep {SPSSonSparkR}</td><td style="text-align: right;">R Documentation</td></tr></table>
+
+<h2>Two-Step Cluster</h2>
+
+<h3>Description</h3>
+
+<p>Scalable Two-Step is based on the familiar two-step clustering algorithm but extends both
+its functionality and performance in several directions.
+First, it can effectively work with large and distributed data supported by Spark that
+provides the Map-Reduce computing paradigm.
+Second, the algorithm provides mechanisms for selecting the most relevant features for
+clustering the given data, as well as detecting rare outlier points. Moreover, it provides
+an enhanced set of evaluation and diagnostic features for enabling insight.
+The algorithm of two-step clustering first performs a pre-clustering step by scanning the
+entire dataset and storing the dense regions of data cases in terms of summary statistics
+called cluster features. The cluster features are stored in memory in a data structure
+called the CF-tree. Finally, an agglomerative hierarchical clustering algorithm is applied
+to cluster the set of cluster features.
+</p>
+
+
+<h3>Usage</h3>
+
+<pre>
+clustering.twostep(data, formula, ...)
+
+## S4 method for signature 'DataFrame,formula'
+clustering.twostep(data, formula,
+  standardizeFieldList = c(""), autoClustering = TRUE,
+  featureSelection = TRUE, outlierHandling = TRUE, ...)
+</pre>
+
+
+<h3>Arguments</h3>
+
+<table summary="R argblock">
+<tr valign="top"><td><code>standardizeFieldList</code></td>
+<td>
+<p>Parameter for specifying one set of input continuous fields that
+needs to be standardized. Every field in this set must have two statistics
+&quot;mean&quot; and &quot;variance&quot; in the input data model, otherwise this field will be
+not standardized. For example about data model: &lt;Field measure=&quot;continuous&quot;
+name=&quot;Cost&quot; role=&quot;input&quot; storage=&quot;real&quot;&gt; &lt;ContinuousStatistics mean=&quot;54.909&quot;
+variance=&quot;806.252&quot; sumCompWts=&quot;200&quot; sumFreqWts=&quot;200&quot;/&gt; &lt;/Field&gt;</p>
+</td></tr>
+<tr valign="top"><td><code>autoClustering</code></td>
+<td>
+<p>If set to True, the algorithm will automatically determine the best
+number of clusters, within the specified range. Default: true.</p>
+</td></tr>
+<tr valign="top"><td><code>featureSelection</code></td>
+<td>
+<p>Param for doing adaptive feature selection or not. Default: true. The
+adaptive feature selection is a heavyweight operation,so it's time-consuming;
+the required time is proportional to the number of fields.</p>
+</td></tr>
+<tr valign="top"><td><code>outlierHandling</code></td>
+<td>
+<p>Param for outlier handling option. Default: true.</p>
+</td></tr>
+<tr valign="top"><td><code>categoryMajorityThreshold</code></td>
+<td>
+<p>Categorical fields with a percentage of cases in a single category
+greater than the specified value are excluded from the analysis. The value
+must be greater than 0 and less than 1. Default: 0.95.</p>
+</td></tr>
+<tr valign="top"><td><code>maxClusterNum</code></td>
+<td>
+<p>Param for the upper range of cluster number if it's RANGE. Must be &gt;
+0. Default: 15.</p>
+</td></tr>
+<tr valign="top"><td><code>autoClusteringMethod</code></td>
+<td>
+<p>If you set autoClustering = True, choose from the following
+clustering methods used to automatically determine the number of clusters: -
+&quot;CRITERION&quot;: Information criteria convergence is the ratio of information
+criteria corresponding to two current cluster solutions and the first cluster
+solution. The criterion used is the one selected in the Clustering Criterion
+group. - &quot;DISTANCEJUMP&quot;: Distance jump is the ratio of distances corresponding
+to two consecutive cluster solutions. - &quot;MAXIMUM&quot;: Combine results from the
+information criteria convergence method and the distance jump method to
+produce the number of clusters corresponding to the second jump. - &quot;MINIMUM&quot;:
+Combine results from the information criteria convergence method and the
+distance jump method to produce the number of clusters corresponding to the
+first jump Default: MINIMUM</p>
+</td></tr>
+<tr valign="top"><td><code>featureImportanceMethod</code></td>
+<td>
+<p>Feature Importance Method determines how important the features
+(fields) are in the cluster solution. The output includes information about
+overall feature importance and the importance of each feature field in each
+cluster. Features that do not meet a minimum threshold are excluded: -
+&quot;CRITERION&quot;: Based on the criterion that is selected in the Clustering
+Criterion group. - &quot;EFFECTSIZE&quot;: Feature importance is based on effect size
+instead of significance values. Default: CRITERION</p>
+</td></tr>
+<tr valign="top"><td><code>maxEntNonLeaf</code></td>
+<td>
+<p>Param for the max number of entries that a non leaf node can hold.
+Must be &gt; 0. Default: 8.</p>
+</td></tr>
+<tr valign="top"><td><code>missingValueThreshold</code></td>
+<td>
+<p>Param for the portion of missing value in any feature. Must be &gt;= 0
+and &lt;= 1. Default: 0.7. If the missing value portion larger than this value,
+exclude the feature.</p>
+</td></tr>
+<tr valign="top"><td><code>outlierClusterNum</code></td>
+<td>
+<p>Parameter for specifying the number of the most extreme outlier
+clusters. Must be &gt; 0. Default: 20. Use to specify the number outliers to
+export, used only on outlierHandling=true.</p>
+</td></tr>
+<tr valign="top"><td><code>outlierThreshold</code></td>
+<td>
+<p>Param for leaf entry which contains less than this value will
+consider as outlier. Must be &gt;= 2. Default: 10.</p>
+</td></tr>
+<tr valign="top"><td><code>maxEntLeaf</code></td>
+<td>
+<p>Param for the max number of entries that a leaf node can hold. Must
+be &gt; 1. Default: 8.</p>
+</td></tr>
+<tr valign="top"><td><code>minFrequency</code></td>
+<td>
+<p>Param for the minimum portion of feature frequency in Feature
+Selection. Must be &gt; 0 and &lt; 1. Default: 0.5. This parameter is used for
+adaptive feature selection.</p>
+</td></tr>
+<tr valign="top"><td><code>sigLevel</code></td>
+<td>
+<p>Param for significance level for computing feature importance. Must
+be &gt; 0 and &lt; 1. Default: 0.05. This is used only when
+featureImpoMethod=EFFECTSIZE.</p>
+</td></tr>
+<tr valign="top"><td><code>featureFiltering</code></td>
+<td>
+<p>Param for doing feature filtering or not. Default: true.</p>
+</td></tr>
+<tr valign="top"><td><code>coefficientThreshold</code></td>
+<td>
+<p>Param for the limit of coefficient of variation of a continuous
+feature. Must be &gt;= 0 and &lt;= 1. Default: 0.05. If the coefficient of variation
+of a continuous feature is smaller than this value, exclude the feature.</p>
+</td></tr>
+<tr valign="top"><td><code>categoryCountThreshold</code></td>
+<td>
+<p>Categorical fields with more than the specified number of categories
+are excluded from the analysis. The value must be a positive integer greater
+than 0. Default: 24.</p>
+</td></tr>
+<tr valign="top"><td><code>distMeasure</code></td>
+<td>
+<p>This selection determines how the similarity between two clusters is
+computed: - &quot;LOGLIKELIHOOD&quot;: The likelihood measure places a probability
+distribution on the fields. Continuous fields are assumed to be normally
+distributed, while categorical fields are assumed to be multinomial. All
+fields are assumed to be independent. - &quot;EUCLIDEAN&quot;: The Euclidean measure is
+the &quot;straight line&quot; distance between two clusters. Squared Euclidean measure
+and the Ward method are used to compute similarity between clusters. It can be
+used only when all of the fields are continuous. Default: LOGLIKELIHOOD</p>
+</td></tr>
+<tr valign="top"><td><code>maxTreeHeight</code></td>
+<td>
+<p>Param for maximum height of the Tree. Must be &gt; 0. Default: 3.</p>
+</td></tr>
+<tr valign="top"><td><code>minClusterNum</code></td>
+<td>
+<p>Param for the lower range of cluster number if it's RANGE. Must be &gt;
+1. Default: 2. This value should smaller or equal with maxClusterNum.</p>
+</td></tr>
+<tr valign="top"><td><code>fixedClusterNum</code></td>
+<td>
+<p>Param for the number of cluster if it's FIXED. Must be &gt; 1. Default:
+5.</p>
+</td></tr>
+<tr valign="top"><td><code>informationCriterion</code></td>
+<td>
+<p>This selection controls how the automatic clustering algorithm
+determines the number of clusters: - &quot;BIC&quot;: A measure for selecting and
+comparing models based on the -2 log likelihood. Smaller values indicate
+better models. The BIC also &quot;penalizes&quot; overparameterized models (complex
+models with a large number of inputs, for example), but more strictly than the
+AIC. - &quot;AIC&quot;: A measure for selecting and comparing models based on the -2 log
+likelihood. Smaller values indicate better models. The AIC &quot;penalizes&quot;
+overparameterized models (complex models with a large number of inputs, for
+example). Default: BIC</p>
+</td></tr>
+</table>
+
+
+<h3>Examples</h3>
+
+<pre><code class="r">## Not run: 
+##D sc &lt;- sparkR.init()
+##D data(iris)
+##D sqlContext &lt;- sparkRSQL.init(sc)
+##D df &lt;- createDataFrame(sqlContext, iris)
+##D twostepmodel &lt;- clustering.twostep(df,~Sepal_Length+Sepal_Width)
+##D 
+##D scoredata &lt;- predict(twostepmodel,df)
+##D head(scoredata)
+## End(Not run)
+</code></pre>
+
+
+<hr /><div style="text-align: center;">[Package <em>SPSSonSparkR</em> version 0.1.0 <a href="00Index.html">Index</a>]</div>
+</body></html>
